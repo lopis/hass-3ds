@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "camera.h": "c",
+    "quirc.h": "c",
+    "*.back": "c"
+  },
+  "C_Cpp.errorSquiggles": "enabled"
+}
