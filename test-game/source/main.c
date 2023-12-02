@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <3ds.h>
-#include "camera.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,15 +20,17 @@ int main(int argc, char *argv[])
 	// 	printf("Loading camera to copy QR code access token.");
 	// }
 
-	printf("Loading camera to copy QR code access token.");
-	if (R_SUCCEEDED(camInit()))
-	{
-		init_qr();
-	}
-	else
-	{
-		printf("Your camera failed to init");
-	}
+	// printf("Loading camera to copy QR code access token.");
+	// if (R_SUCCEEDED(camInit()))
+	// {
+	// 	init_qr();
+	// }
+	// else
+	// {
+	// 	printf("Your camera failed to init");
+	// }
+
+	toggleLights();
 
 	printf("Press START to exit");
 	// Main loop
