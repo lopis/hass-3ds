@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
 	// 	printf("Your camera failed to init");
 	// }
 
-	toggleLights();
+	// toggleLights();
+	drawShapes();
 
 	printf("Press START to exit");
 	// Main loop
