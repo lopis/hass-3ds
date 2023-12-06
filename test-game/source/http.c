@@ -25,34 +25,34 @@ Result http_post(const char *url, const char *data)
   u32 contentsize = 0, readsize = 0, size = 0;
   u8 *buf, *lastbuf;
 
-  printf("POSTing %s\n", url);
+  // printf("POSTing %s\n", url);
 
   do
   {
     ret = httpcOpenContext(&context, HTTPC_METHOD_POST, url, 0);
-    printf("return from httpcOpenContext: %" PRIx32 "\n", ret);
+    // printf("return from httpcOpenContext: %" PRIx32 "\n", ret);
 
     // This disables SSL cert verification, so https:// will be usable
     ret = httpcSetSSLOpt(&context, SSLCOPT_DisableVerify);
-    printf("return from httpcSetSSLOpt: %" PRIx32 "\n", ret);
+    // printf("return from httpcSetSSLOpt: %" PRIx32 "\n", ret);
 
     // Enable Keep-Alive connections
     ret = httpcSetKeepAlive(&context, HTTPC_KEEPALIVE_ENABLED);
-    printf("return from httpcSetKeepAlive: %" PRIx32 "\n", ret);
+    // printf("return from httpcSetKeepAlive: %" PRIx32 "\n", ret);
 
     char *authorization = concat("Bearer ", TOKEN);
     ret = httpcAddRequestHeaderField(&context, "Authorization", authorization);
 
     // Set a User-Agent header so websites can identify your application
     ret = httpcAddRequestHeaderField(&context, "User-Agent", "Nintendo 3DS/Home Assistant 3DS");
-    printf("return from httpcAddRequestHeaderField: %" PRIx32 "\n", ret);
+    // printf("return from httpcAddRequestHeaderField: %" PRIx32 "\n", ret);
 
     // Set a Content-Type header so websites can identify the format of our raw body data.
     // If you want to send form data in your request, use:
     // ret = httpcAddRequestHeaderField(&context, "Content-Type", "multipart/form-data");
     // If you want to send raw JSON data in your request, use:
     ret = httpcAddRequestHeaderField(&context, "Content-Type", "application/json");
-    printf("return from httpcAddRequestHeaderField: %" PRIx32 "\n", ret);
+    // printf("return from httpcAddRequestHeaderField: %" PRIx32 "\n", ret);
 
     // Post specified data.
     // If you want to add a form field to your request, use:
@@ -61,7 +61,7 @@ Result http_post(const char *url, const char *data)
     // ret = httpcAddPostDataBinary(&context, "field name", yourBinaryData, length);
     // If you want to add raw data to your request, use:
     ret = httpcAddPostDataRaw(&context, (u32 *)data, strlen(data));
-    printf("return from httpcAddPostDataRaw: %" PRIx32 "\n", ret);
+    // printf("return from httpcAddPostDataRaw: %" PRIx32 "\n", ret);
 
     ret = httpcBeginRequest(&context);
     if (ret != 0)
@@ -92,14 +92,14 @@ Result http_post(const char *url, const char *data)
       }
       ret = httpcGetResponseHeader(&context, "Location", newurl, 0x1000);
       url = newurl; // Change pointer to the url that we just learned
-      printf("redirecting to url: %s\n", url);
+      // printf("redirecting to url: %s\n", url);
       httpcCloseContext(&context); // Close this context before we try the next
     }
   } while ((statuscode >= 301 && statuscode <= 303) || (statuscode >= 307 && statuscode <= 308));
 
   if (statuscode != 200)
   {
-    printf("URL returned status: %" PRIx32 "\n", statuscode);
+    // printf("URL returned status: %" PRIx32 "\n", statuscode);
     httpcCloseContext(&context);
     if (newurl != NULL)
       free(newurl);
@@ -116,7 +116,7 @@ Result http_post(const char *url, const char *data)
     return ret;
   }
 
-  printf("reported size: %" PRIx32 "\n", contentsize);
+  // printf("reported size: %" PRIx32 "\n", contentsize);
 
   // Start with a single page buffer
   buf = (u8 *)malloc(0x1000);
@@ -169,11 +169,11 @@ Result http_post(const char *url, const char *data)
     return -1;
   }
 
-  printf("response size: %" PRIx32 "\n", size);
+  // printf("response size: %" PRIx32 "\n", size);
 
   // Print result
-  printf((char *)buf);
-  printf("\n");
+  // printf((char *)buf);
+  // printf("\n");
 
   gfxFlushBuffers();
   gfxSwapBuffers();
@@ -189,12 +189,7 @@ Result http_post(const char *url, const char *data)
 void toggleLights()
 {
   Result ret = 0;
-  gfxInitDefault();
   httpcInit(4 * 1024 * 1024); // Buffer size when POST/PUT.
-
-  consoleInit(GFX_BOTTOM, NULL);
-
   char *url = "http://192.168.178.39:8123/api/services/light/toggle";
-  ret = http_post(url, "{\"entity_id\": \"light.bedroom\"}");
-  printf("return from http_post: %" PRIx32 "\n", ret);
+  return http_post(url, "{\"entity_id\": \"light.bedroom\"}");
 }

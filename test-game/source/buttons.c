@@ -14,6 +14,8 @@ C2D_TextBuf g_staticBuf;
 C2D_Text g_staticText;
 C2D_Font font;
 
+bool buttonPressed = false;
+
 //---------------------------------------------------------------------------------
 void drawShapes()
 {
@@ -55,12 +57,36 @@ void drawShapes()
     printf("\x1b[3;1HGPU:     %6.2f%%\x1b[K", C3D_GetDrawingTime() * 6.0f);
     printf("\x1b[4;1HCmdBuf:  %6.2f%%\x1b[K", C3D_GetCmdBufUsage() * 100.0f);
 
+    touchPosition touch;
+    // Read the touch screen coordinates
+    hidTouchRead(&touch);
+    // Print the touch screen coordinates
+    printf("\x1b[2;0H%03d; %03d", touch.px, touch.py);
+
     // Render the scene
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
     C2D_TargetClear(top, clrClear);
     C2D_SceneBegin(top);
 
     u32 color = clrRec1;
+    float fontScale = 0.8f;
+    int fontSize = 25 * fontScale;
+    if (
+        touch.px > BOTTOM_WIDTH / 2 - 70 &&
+        touch.px < BOTTOM_WIDTH / 2 + 70 &&
+        touch.py > BOTTOM_HEIGHT / 2 - 20 &&
+        touch.py < BOTTOM_HEIGHT / 2 + 20)
+    {
+      color = clrRec2;
+      buttonPressed = true;
+    }
+
+    if (touch.px == 0 && touch.py == 0 && buttonPressed)
+    {
+      buttonPressed = false;
+      toggleLights();
+    }
+
     C2D_DrawRectangle(
         BOTTOM_WIDTH / 2 - 70,
         BOTTOM_HEIGHT / 2 - 20,
@@ -71,15 +97,14 @@ void drawShapes()
         color,
         color,
         color);
-    float size = 0.8f;
     C2D_DrawText(
         &g_staticText,
         C2D_AlignCenter | C2D_WithColor,
         BOTTOM_WIDTH / 2,
-        BOTTOM_HEIGHT / 2 - (size * 25) / 2,
+        BOTTOM_HEIGHT / 2 - fontSize / 2,
         0.0f,
-        size,
-        size,
+        fontScale,
+        fontScale,
         white);
 
     C3D_FrameEnd(0);
